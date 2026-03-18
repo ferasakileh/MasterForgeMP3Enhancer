@@ -39,7 +39,6 @@ Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
 UninstallDisplayIcon={app}\{#MyAppExeName}
-SetupIconFile=
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
