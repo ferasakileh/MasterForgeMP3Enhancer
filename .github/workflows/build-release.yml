@@ -6,16 +6,22 @@ on:
     tags:
       - "v*"
 
+permissions:
+  contents: write
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   build-windows:
     runs-on: windows-latest
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.11"
 
@@ -43,7 +49,7 @@ jobs:
           Compress-Archive -Path dist\MasterForge320\* -DestinationPath dist\MasterForge320-windows-x64.zip -CompressionLevel Optimal
 
       - name: Upload build artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: MasterForge320-windows-x64
           path: |
