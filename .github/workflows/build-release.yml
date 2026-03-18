@@ -1,0 +1,59 @@
+name: Build MasterForge 320
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install app dependencies
+        run: pip install -r requirements.txt
+
+      - name: Install build dependencies
+        run: pip install -r requirements-build.txt
+
+      - name: Build executable
+        run: python -m PyInstaller --noconfirm masterforge.spec
+
+      - name: Install Inno Setup
+        shell: pwsh
+        run: choco install innosetup -y
+
+      - name: Build installer
+        shell: pwsh
+        run: |
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "/DMyAppVersion=${{ github.ref_name }}" "/DMyAppSourceDir=${{ github.workspace }}\dist\MasterForge320" "/DMyOutputDir=${{ github.workspace }}\dist" "${{ github.workspace }}\installer\MasterForge320.iss"
+
+      - name: Create zip package
+        shell: pwsh
+        run: |
+          Compress-Archive -Path dist\MasterForge320\* -DestinationPath dist\MasterForge320-windows-x64.zip -CompressionLevel Optimal
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MasterForge320-windows-x64
+          path: |
+            dist/MasterForge320-windows-x64.zip
+            dist/MasterForge320-Setup-*.exe
+
+      - name: Publish GitHub release asset
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/MasterForge320-windows-x64.zip
+            dist/MasterForge320-Setup-*.exe

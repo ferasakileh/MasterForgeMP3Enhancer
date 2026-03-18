@@ -1,0 +1,12 @@
+numpy
+scipy
+librosa
+soundfile
+pydub
+noisereduce
+torch
+demucs
+flask
+matplotlib
+simpleaudio
+tkinterdnd2
